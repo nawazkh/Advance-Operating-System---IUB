@@ -1,0 +1,42 @@
+#include <xinu.h>
+#include <prodcons.h>
+#include <stdlib.h>
+
+/*Global variable for producer consumer*/
+extern int n; /*this is just declaration*/
+
+/*function Prototype*/
+extern int32 xsh_prodcons(int, char *);
+
+shellcmd xsh_run(int nargs, char *args[])
+{
+	int num = 20; // variable to send to prodcons
+	if (nargs == 2 && strncmp(args[1], "--help", 7) == 0) {
+		printf("Use: %s\n\n", args[0]);
+		printf("Description:\n");
+		printf("\run, assignment 2.5; usage:\n run prodcons number");
+		printf("Options:\n");
+		printf("\t--help\t display this help and exit\n");
+		return 0;
+	}
+	if (nargs < 3) {
+		fprintf(stderr, "%s: too many arguments\n", args[0]);
+		fprintf(stderr, "Try '%s --help' for more information\n",
+			args[0]);
+		return 1;
+	}
+	if(nargs == 3){
+		if(strncmp(args[1], "prodcons",8) == 0){
+			if(!checkNum(args[2])){
+				printf("Invalid number. Please enter integer after prodcons");
+				return (1);
+			}
+		}else{
+			printf("Invalid prodcons spelling. Please enter prodcons as second argument after run");
+			return (1);
+		}
+	}
+	count = atoi(args[2]);
+	xsh_prodcons();
+
+}

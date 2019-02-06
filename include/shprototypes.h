@@ -1,3 +1,9 @@
+/*in the file xsh_prodcons.c*/
+extern shellcmd xsh_prodcons	(int32,char *[]);
+
+/*int the file xsh_run.c */
+extern 	shellcmd xsh_run	(int32, char *[]);
+
 /*in file xsh_hello.c*/
 extern	shellcmd  xsh_hello	(int32, char *[]);
 

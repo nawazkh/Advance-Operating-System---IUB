@@ -1,0 +1,19 @@
+#include <xinu.h>
+#include <prodcons.h>
+#include <stdlib.h>
+
+int n;                 //Definition for global variable 'n'
+/*Now global variable n will be on Heap so it is accessible all the processes i.e. consume and produce*/
+
+int checkNum(const char *str) 
+{
+    while(*str != '\0')
+    {
+        if(*str < '0' || *str > '9')
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
+shellcmd xsh_
