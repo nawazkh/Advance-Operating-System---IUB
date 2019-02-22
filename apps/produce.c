@@ -2,14 +2,12 @@
 #include <prodcons.h>
 
 void producer(int count) {
-	int32 i; //counter 
-	
-	for(i = 0; i <= count; i++){
-		n = i;
-		printf("produced : %d \n",i);
+	while(n < count){
+		sleep(1);
+		wait(consumed);
+		n++;
+		printf("Produced value : %d \n", n);
+		signal(produced);
 	}
+	printf("Producer ended.\n");
 }
-
-
-
-

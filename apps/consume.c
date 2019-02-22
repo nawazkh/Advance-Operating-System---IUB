@@ -2,11 +2,18 @@
 #include <prodcons.h>
 
 void consumer(int count) {
-	int32 i; // counter
-
-	for(i = 0; i <= count; i++){
-		printf("consumed : %d \n",n);
+	while(1){
+		sleep(1);
+		wait(produced);
+		printf("consumed value : %d \n", n);
+		if(n == count){
+			break;
+		}
+		signal(consumed);
 	}
+	printf("Consumer ended.\n");
+	printf("Deleting semaphores.\n");
+	semdelete(produced);
+	semdelete(consumed);
+	printf("Semaphores deleted.\n");
 }
-
-
