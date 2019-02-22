@@ -6,6 +6,7 @@ int n;                 //Definition for global variable 'n'
 /*Now global variable n will be on Heap so it is accessible all the processes i.e. consume and produce*/
 
 sid32 consumed, produced;
+
 int checkNum(const char *str)
 {
     while(*str != '\0')
