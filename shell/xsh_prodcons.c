@@ -5,7 +5,7 @@
 int n;                 //Definition for global variable 'n'
 /*Now global variable n will be on Heap so it is accessible all the processes i.e. consume and produce*/
 
-sid32 consumed, produced;
+sid32 consumed, produced,mutex;
 
 int checkNum(const char *str)
 {
@@ -52,6 +52,7 @@ shellcmd xsh_prodcons(int nargs, char *args[])
 	/*Init semaphore*/
 	produced = semcreate(0);
 	consumed = semcreate(1);
+	mutex = semcreate(1);
   resume( create(producer, 1024, 20, "producer", 1, count));
   resume( create(consumer, 1024, 20, "consumer", 1, count));
   return (0);

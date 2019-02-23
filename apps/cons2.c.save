@@ -1,0 +1,12 @@
+#include <xinu.h>
+#include <prodcons.h>
+
+void cons2(int sid, int work_queue, int time_window, int output_time){
+	printf("In consumer %d", sid);
+	wait(arr_full[sid]);
+	wait(arr_muttex[sid]);
+	//consuming the data
+	printf("Hello from consumer %d", sid);
+	signal(
+
+}

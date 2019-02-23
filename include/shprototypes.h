@@ -1,5 +1,8 @@
+/*in the file stream_proc.c*/
+extern shellcmd stream_proc	(int32, char *[]);
+
 /*in the file xsh_prodcons.c*/
-extern shellcmd xsh_prodcons	(int32,char *[]);
+extern shellcmd xsh_prodcons	(int32, char *[]);
 
 /*int the file xsh_run.c */
 extern 	shellcmd xsh_run	(int32, char *[]);
