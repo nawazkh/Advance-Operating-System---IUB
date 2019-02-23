@@ -33,7 +33,10 @@ shellcmd stream_proc(int nargs, char *args[]){
   		printf("%s", usage);
   		return(-1);
 	}
-	else {
+	else if(nargs != 9){
+		printf("%s", usage);
+		return -1;
+	}else {
   		i = nargs - 1;
 		while (i > 0) {
     			ch = args[i-1];
