@@ -119,7 +119,7 @@ shellcmd stream_proc(int nargs, char *args[]){
 	/* Creating producer  */
 	resume(create(prod2, 1024, 20, "prod2", 1, work_queue));
 	
-	printf("Producers and Consumers end \n");
+//	printf("Producers and Consumers end \n");
 	
 
 	// creating one producer
