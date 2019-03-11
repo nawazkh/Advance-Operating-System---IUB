@@ -23,7 +23,8 @@ shellcmd xsh_run(int nargs, char *args[]){
 					/*   formatted command list	*/
 	int32	j;			/* index of commands across one	*/
 					/*   line of formatted output	*/
-	
+	int 	argCount;		/* counts the number of arguments*/
+
 	if (nargs == 2 && strncmp(args[1], "--help", 7) == 0) {
 		printf("Use: %s\n\n", args[0]);
 		printf("Description:\n");
@@ -32,23 +33,24 @@ shellcmd xsh_run(int nargs, char *args[]){
 		printf("\t--help\t display this help and exit\n");
 		return 0;
 	}
-	if (nargs > 3 || nargs < 3) {
-		fprintf(stderr, "%s: too many arguments\n", args[0]);
-		fprintf(stderr, "Try '%s --help' for more information\n",
-				args[0]);
-		return 1;
-	}
+//	if (nargs > 3 || nargs < 3) {
+//		fprintf(stderr, "%s: too many arguments\n", args[0]);
+//		fprintf(stderr, "Try '%s --help' for more information\n",
+//				args[0]);
+//		return 1;
+//	}
 	
-	if(strncmp(args[1],"prodcons",9) != 0){
-		fprintf(stderr, "%s: argument in error\n", args[0]);
-		fprintf(stderr, "Try '%s --help' for more information\n",
-				args[0]);
-		return 1;
-	}
+//	if(strncmp(args[1],"prodcons",9) != 0){
+//		fprintf(stderr, "%s: argument in error\n", args[0]);
+//		fprintf(stderr, "Try '%s --help' for more information\n",
+//				args[0]);
+//		return 1;
+//	}
 	
-	
+	fprintf(stderr,"Number of args passed %d \n",nargs);	
+	argCount = 0;
 	/*count = atoi(args[2]);*/
-	if (nargs == 3) {
+//	if (nargs == 3) {
 		for (i = 0; i < ncmd; i++) {
 			src = cmdtab[i].cname;
 			cmp = args[1];
@@ -64,15 +66,19 @@ shellcmd xsh_run(int nargs, char *args[]){
 			}
 
 			/* prepare args for shell command */
-
-			argv[0] = args[1];
-			argv[1] = args[2];
+			while(argCount < nargs){
+				argv[argCount] = args[argCount+1];
+                        	//argv[1] = args[2];
+				argCount++;
+			}
+			//argv[0] = args[1];	
+			//argv[1] = args[2];
 			(*cmdtab[i].cfunc) (2, argv);
 			return 0;
 		}
 		printf("%s: no such command as '%s'\n", args[0], args[1]);
 		return 1;
-	}
+//	}
 
 	/*
 	nargs--;	
