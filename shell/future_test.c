@@ -13,7 +13,7 @@ shellcmd future_test(int nargs, char *args[])
   int ring = 0;
   int future_flags = 0;
   int ring_count = 10;
-  int final_val;
+  char final_val;
   int i;
 
 #ifndef NFUTURE
@@ -36,7 +36,7 @@ shellcmd future_test(int nargs, char *args[])
     in = first;
     for (i=0; i < ring_count; i++) {
       out = future_alloc(future_flags, sizeof(int));
-      resume( create(future_ring, 1024, 20, i, 2, in, out) );
+      resume( create(future_ring, 1024, 20, "", 2, in, out) );
       in = out;
     }
     printf("master sets %d\n", ring_count);
