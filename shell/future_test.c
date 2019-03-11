@@ -26,7 +26,7 @@ shellcmd future_test(int nargs, char *args[])
     printf("Producer/consumer process ring\n");
   }
   else if(nargs == 3 && strncmp(args[1], "-r", 2) == 0){
-    fprintf(stderr,"args[0]: %d, args[1]: %d, args[2]: %d\n",args[0],args[1],args[2]);
+    //fprintf(stderr,"args[0]: %d, args[1]: %d, args[2]: %d\n",args[0],args[1],args[2]);
     if(checkNum(args[2])){
       ring = 1;
       ring_count = atoi(args[2]);
