@@ -20,10 +20,20 @@ shellcmd future_test(int nargs, char *args[])
   printf("no support for futures (NFUTURES not defined.)\n");
   return OK;
 #endif
-
+  fprintf(stderr,"nargs: %d\n",nargs);
   if (nargs == 2 && strncmp(args[1], "-r", 2) == 0) {
     ring = 1;
     printf("Producer/consumer process ring\n");
+  }
+  else if(nargs == 3 && strncmp(args[1], "-r", 2) == 0){
+    fprintf(stderr,"args[0]: %d, args[1]: %d, args[2]: %d\n",args[0],args[1],args[2]);
+    if(checkNum(args[2])){
+      ring = 1;
+      ring_count = atoi(args[2]);
+    }else{
+      printf("Invalid number. Please enter integer after future_test\n");
+      return (OK);
+    }
   }
   else {
     printf("No valid options\n");

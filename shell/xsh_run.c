@@ -10,7 +10,7 @@
 shellcmd xsh_run(int nargs, char *args[]){
 	/*int count = 20; // minimum values to be sent to prodcons*/
 		int32	i;
-	char	*argv[2];		/* argument vector for call	*/
+	char	*argv[3];		/* argument vector for call	*/
 	char	*src, *cmp;		/* used for string compare	*/
 	int32	len;			/* length of a command name	*/
 	int32	maxlen;			/* maximum length of all	*/
@@ -73,7 +73,7 @@ shellcmd xsh_run(int nargs, char *args[]){
 			}
 			//argv[0] = args[1];	
 			//argv[1] = args[2];
-			(*cmdtab[i].cfunc) (2, argv);
+			(*cmdtab[i].cfunc) (argCount-1, argv);
 			return 0;
 		}
 		printf("%s: no such command as '%s'\n", args[0], args[1]);

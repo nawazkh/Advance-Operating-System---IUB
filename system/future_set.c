@@ -16,7 +16,7 @@ syscall future_set(future* f, char* value){
 	pid32 pid;
 	intmask mask;
 	mask = disable();
-	fprintf(stderr,"in future set");
+//	fprintf(stderr,"in future set");
 	if(f->state == FUTURE_EMPTY){
 		if(f->flags == FUTURE_EXCLUSIVE){
 			f->value = value;
