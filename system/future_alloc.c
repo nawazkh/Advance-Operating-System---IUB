@@ -31,20 +31,16 @@ future* future_alloc(int future_flags, uint size){
 		if(future_flags != FUTURE_SHARED){
 			// create set queue
         		myq* setq = (myq*)getmem(sizeof(myq));
-			//setq->total = 50;// having a queue of length 50
         		setq->front = 0;
         		setq->rear = -1;
         		setq->size=0;
-			//setq->parray=(int*)getmem(setq->total * sizeof(int));
-        		f->set_queue = setq;
+			f->set_queue = setq;
 		}
 		// create get queue
         	myq* getq = (myq*)getmem(sizeof(myq));
         	getq->front = 0;
         	getq->rear = -1;
         	getq->size=0;
-		//getq->total=50;
-		//getq->parray=(int*)getmem(getq->total * sizeof(int));
         	f->get_queue = getq;
 	}
 	// consumer and producer counts for all the futures.

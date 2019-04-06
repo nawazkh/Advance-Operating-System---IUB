@@ -18,7 +18,9 @@ syscall future_get(future* f, char* value){
 	intmask mask;
 	mask = disable();
 	pid32 pid,status;
-	
+	/*
+	If in the flag od Future exclusive, allow only one consumer
+	*/
 	//f->consumer_count = f->consumer_count + 1;	
 	if(f->flags == FUTURE_EXCLUSIVE){
 		f->consumer_count = f->consumer_count + 1;
@@ -42,8 +44,11 @@ syscall future_get(future* f, char* value){
 			restore(mask);
                         return SYSERR;
 		}
+	/*
+        If in the flag is Future shared, one to many invocation
+        */
 	}else if(f->flags == FUTURE_SHARED){
-			//fprintf(stderr,"---in Future_get---\n");
+		//fprintf(stderr,"---in Future_get---\n");
 		if(f->state == FUTURE_FULL){
 			// get the value if the	future is full.
                         f->state = FUTURE_EMPTY;
@@ -53,7 +58,8 @@ syscall future_get(future* f, char* value){
 			//fprintf(stderr,"future in get: not full\n",value);
 			//fprintf(stderr,"future state : %d\n",f->state);
 			f->state=FUTURE_WAITING;
-			status = fut_enqueue(currpid, f->get_queue);// add it to the get_queue and suspend it
+			status = fut_enqueue(currpid, f->get_queue);
+			// add it to the get_queue and suspend it. Will be resumed by producer
 			if(status == (pid32) SYSERR){
 				restore(mask);
 				return SYSERR;
@@ -71,13 +77,16 @@ syscall future_get(future* f, char* value){
                         }
 			suspend(currpid);
 			*value = *f->value;
-			if(fut_isempty(f->get_queue)){// mark future as     $
+			if(fut_isempty(f->get_queue)){// mark future as empty if no one is waiting on it.
                                 f->state = FUTURE_EMPTY;
                         	//fprintf(stderr,"ffff marked as empty\n");
                         }
 			restore(mask);
                 	return OK;			
 		}
+	/*
+	If in the flag is Future Queue: many to many invocation
+        */
 	}else if(f->flags == FUTURE_QUEUE){
 		if(!fut_isempty(f->set_queue)){// resume threads one by one
 			pid = fut_dequeue(f->set_queue);

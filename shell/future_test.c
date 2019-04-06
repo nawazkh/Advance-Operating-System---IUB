@@ -82,7 +82,6 @@ shellcmd future_test(int nargs, char *args[])
 			for(i = fib; i >= 0; i--){
 				resume( create(ffib, 1024, 20, i, 1,i) );
 			}
-			//resume( create(ffib, 1024, 20, "fprod2", 1, 1) );
 			future_get(fibfut[fib], (char *)&final_fib);
 
    			for (i=0; i <= fib; i++) {
