@@ -19,7 +19,7 @@ future* future_alloc(int future_flags, uint size){
 	mask = disable();
 		
 	f = (future * )getmem(sizeof(future));
-	fprintf(stderr,"Future Flags:%d\n",future_flags);		
+	//fprintf(stderr,"Future Flags:%d\n",future_flags);		
 	
 	// value as per the size specified
 	f->state = FUTURE_EMPTY;

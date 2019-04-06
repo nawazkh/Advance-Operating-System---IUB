@@ -38,18 +38,18 @@ syscall future_set(future* f, char* value){
 		}
 	}else if(f->flags==FUTURE_SHARED){
 		f->prodcon_shared_count=f->prodcon_shared_count+1;
-			fprintf(stderr,"future prodcon shared count is %d\n",f->prodcon_shared_count);
+		//fprintf(stderr,"future prodcon shared count is %d\n",f->prodcon_shared_count);
 		if(f->prodcon_shared_count <= 1){
-				fprintf(stderr,"f->state is %d\n",f->state);
+			//fprintf(stderr,"f->state is %d\n",f->state);
 			if(f->state==FUTURE_EMPTY){
 				f->value=value;
 				f->state=FUTURE_FULL;
-					fprintf(stderr,"f->value is %d\n",f->value);
+				//fprintf(stderr,"f->value is %d\n",f->value);
 			}
 			else if(f->state==FUTURE_WAITING){
 				f->value=value;
 				f->state=FUTURE_FULL;
-					fprintf(stderr,"State:future waiting,f->value is %d\n",f->value);
+				//fprintf(stderr,"State:future waiting,f->value is %d\n",f->value);
 				while(!fut_isempty(f->get_queue)){
 					pid = fut_dequeue(f->get_queue);
 					resume(pid);

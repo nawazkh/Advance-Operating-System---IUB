@@ -19,9 +19,9 @@ syscall future_get(future* f, char* value){
 	mask = disable();
 	pid32 pid,status;
 	
-	f->consumer_count = f->consumer_count + 1;	
+	//f->consumer_count = f->consumer_count + 1;	
 	if(f->flags == FUTURE_EXCLUSIVE){
-		//f->consumer_count = f->consumer_count + 1;
+		f->consumer_count = f->consumer_count + 1;
 		if(f->consumer_count <= 1){// allowing only one consumer
 			if(f->state == FUTURE_FULL){
 				// get the value if the future is full.
@@ -43,36 +43,41 @@ syscall future_get(future* f, char* value){
                         return SYSERR;
 		}
 	}else if(f->flags == FUTURE_SHARED){
-			fprintf(stderr,"---in Future_get---\n");
+			//fprintf(stderr,"---in Future_get---\n");
 		if(f->state == FUTURE_FULL){
 			// get the value if the	future is full.
-                        *value = *f->value;
-			f->state = FUTURE_EMPTY;
-				fprintf(stderr,"f->value is %d\n",value);
-			
-    			
-			if(fut_isempty(f->get_queue)){// mark future as empty if there are no consumers waiting
-				f->state = FUTURE_EMPTY;
-					fprintf(stderr,"f marked as empty\n");
-			}
-		}else{// Future is not full
+                        f->state = FUTURE_EMPTY;
+			*value = *f->value;
+			//fprintf(stderr,"f->value is %d\n",value);
+		}else if(f->state == FUTURE_EMPTY){// Future is not full
+			//fprintf(stderr,"future in get: not full\n",value);
+			//fprintf(stderr,"future state : %d\n",f->state);
 			f->state=FUTURE_WAITING;
-			pid = fut_enqueue(f->pid, f->get_queue);// add it to the get_queue and suspend it
-			if(pid == (pid32) SYSERR){
+			status = fut_enqueue(currpid, f->get_queue);// add it to the get_queue and suspend it
+			if(status == (pid32) SYSERR){
 				restore(mask);
 				return SYSERR;
 			}
-			//f->state = FUTURE_WAITING;
-			suspend(f->pid);
-			
+			suspend(currpid);			
 			*value=*f->value;
-			
-			if(fut_isempty(f->get_queue)){// mark future as	empty if there are no consumers	waiting
-                                f->state = FUTURE_EMPTY;
+			restore(mask);
+                	return OK;
+		}else if(f->state == FUTURE_WAITING){
+			//fprintf(stderr,"future state : %d\n",f->state);
+			status = fut_enqueue(currpid, f->get_queue);// add it $
+                        if(status == (pid32) SYSERR){
+                                restore(mask);
+                                return SYSERR;
                         }
+			suspend(currpid);
+			*value = *f->value;
+			if(fut_isempty(f->get_queue)){// mark future as     $
+                                f->state = FUTURE_EMPTY;
+                        	//fprintf(stderr,"ffff marked as empty\n");
+                        }
+			restore(mask);
+                	return OK;			
 		}
-		restore(mask);
-                return OK;
 	}else if(f->flags == FUTURE_QUEUE){
 		if(!fut_isempty(f->set_queue)){// resume threads one by one
 			pid = fut_dequeue(f->set_queue);

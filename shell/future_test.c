@@ -79,8 +79,8 @@ shellcmd future_test(int nargs, char *args[])
       				}
     			}
 			
-			for(i = 0; i <= fib; i++){
-				resume( create(ffib, 1024, 20, "fib"+i, 1,i) );
+			for(i = fib; i >= 0; i--){
+				resume( create(ffib, 1024, 20, i, 1,i) );
 			}
 			//resume( create(ffib, 1024, 20, "fprod2", 1, 1) );
 			future_get(fibfut[fib], (char *)&final_fib);
@@ -174,11 +174,12 @@ int ffib(int n) {
                 future_set(fibfut[1],(char *)&one);
                 return OK;
         }
-	fprintf(stderr,"----in fibb----\n");
-	fprintf(stderr,"n is %d\n",n);
+	//fprintf(stderr,"----in fibb----\n");
+	//fprintf(stderr,"n is %d\n",n);
+	//fprintf(stderr,"ppppppminus1 is %d,minus2 is%d\n",minus1,minus2);
 	future_get(fibfut[n-2],(char *)&minus2);
         future_get(fibfut[n-1],(char *)&minus1);
-	fprintf(stderr,"minus1 is %d,minus2 is%d\n",minus1,minus2);
+	//fprintf(stderr,"minus1 is: %d,minus2 is: %d\n",minus1,minus2);
         this = minus1 + minus2;
 
         future_set(fibfut[n], (char *)&this);
