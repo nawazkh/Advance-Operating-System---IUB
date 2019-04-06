@@ -17,20 +17,43 @@ future* future_alloc(int future_flags, uint size){
 	future *f;
 	intmask mask;
 	mask = disable();
-	if(future_flags == FUTURE_EXCLUSIVE){
-			//  fprintf(stderr,"future flags yes\n");
-		// get future some memory
-		f = (future * )getmem(sizeof(future));
-			//  fprintf(stderr,"1\n");	
-		// value as per the size specified
-		f->value = (char *)getmem(sizeof(char)*size);
-			//  fprintf(stderr,"2\n");
-		f->state = FUTURE_EMPTY;
-		f->flags = FUTURE_EXCLUSIVE;
-		f->size = size;
-//		fprintf(stderr,"future allocated with following details\nprocess id: %d, f->value: %d, f->state: %d, f->flags:%d\n",getpid(),*f->value,f->state,f->flags);
+		
+	f = (future * )getmem(sizeof(future));
+	fprintf(stderr,"Future Flags:%d\n",future_flags);		
+	
+	// value as per the size specified
+	f->state = FUTURE_EMPTY;
+	f->flags = future_flags;
+	f->size = size;
+	f->value = (char *)getmem(sizeof(char)*size);	
+
+	if(future_flags != FUTURE_EXCLUSIVE){
+		if(future_flags != FUTURE_SHARED){
+			// create set queue
+        		myq* setq = (myq*)getmem(sizeof(myq));
+			//setq->total = 50;// having a queue of length 50
+        		setq->front = 0;
+        		setq->rear = -1;
+        		setq->size=0;
+			//setq->parray=(int*)getmem(setq->total * sizeof(int));
+        		f->set_queue = setq;
+		}
+		// create get queue
+        	myq* getq = (myq*)getmem(sizeof(myq));
+        	getq->front = 0;
+        	getq->rear = -1;
+        	getq->size=0;
+		//getq->total=50;
+		//getq->parray=(int*)getmem(getq->total * sizeof(int));
+        	f->get_queue = getq;
 	}
-		//fprintf(stderr,"test val %d\n",f->state);
+	// consumer and producer counts for all the futures.
+	f->consumer_count = 0;
+	f->producer_count = 0;
+	f->prodcon_shared_count = 0;	
+
+	//fprintf(stderr,"future allocated with following details\nprocess id: %d, f->value: %d, f->state: %d, f->flags:%d\n",getpid(),*f->value,f->state,f->flags);
+
 	restore(mask);
 	return f;
 }

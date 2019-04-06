@@ -30,3 +30,4 @@ void producer(int count);
 
 void prod2(int work_queue);
 void cons2(int sid, int work_queue, int time_window, int output_time);
+
