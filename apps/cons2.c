@@ -39,7 +39,7 @@ void cons2(int sid, int work_queue, int time_window, int output_time){
 			counter = 0;
 		}
 		arr_val[sid].tail++;
-		//if(124 == (int)data_times) break;	
+		if((int)data_times >= 255 || times == SYSERR) break;	
 		//signal(arr_muttex[sid]);
 		//signal(arr_empty[sid]);
 	}
