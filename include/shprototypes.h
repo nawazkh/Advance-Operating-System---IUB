@@ -1,3 +1,6 @@
+/*in the file stream_proc.c*/
+extern shellcmd sp_future     (int32, char *[]);
+
 /* in file xsh_future_test.c */
 extern shellcmd future_test	(int32, char *[]);
 

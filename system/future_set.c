@@ -23,12 +23,13 @@ syscall future_set(future* f, char* value){
 		if(f->producer_count <= 1){
 			if(f->state==FUTURE_EMPTY){
 				f->value=value;
-				f->flags=FUTURE_FULL;
+				f->state=FUTURE_FULL;
 			}
 			else if(f->state==FUTURE_WAITING){
 				f->value=value;
-                                f->flags=FUTURE_FULL;
+                                f->state=FUTURE_FULL;
 				pid = f->pid;
+				//fprintf(stderr,"2 %s: %d \r\n", __FUNCTION__, __LINE__);
 				resume(pid);
 			}
 			restore(mask);
@@ -53,6 +54,7 @@ syscall future_set(future* f, char* value){
 				//fprintf(stderr,"State:future waiting,f->value is %d\n",f->value);
 				while(!fut_isempty(f->get_queue)){
 					pid = fut_dequeue(f->get_queue);
+					//fprintf(stderr,"2 %s: %d \r\n", __FUNCTION__, __LINE__);
 					resume(pid);
 				}
 			}
@@ -70,6 +72,7 @@ syscall future_set(future* f, char* value){
 			//f->pid = getpid();
 			pid = fut_dequeue(f->get_queue);
 			resume(pid);
+			//fprintf(stderr,"2 %s: %d \r\n", __FUNCTION__, __LINE__);
 
 		}else{//get queue empty
 			pid = getpid();

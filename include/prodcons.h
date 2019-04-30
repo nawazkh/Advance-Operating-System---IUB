@@ -1,12 +1,17 @@
 #include <xinu.h>   
 #include <stddef.h>
 #include <stdio.h> 
-
+#include <future.h>
 
 typedef struct Streamdata{
-int32 timestamp;
-int32 data;
+	int32 timestamp;
+	int32 data;
 } Sdata;
+
+typedef struct StreamFuturedata{
+        future* f_ts;
+        future* f_d;
+} SFdata;
 
 typedef struct Queueval{
 	int32 head;
@@ -23,6 +28,7 @@ extern sid32 *consr;
 extern int *arr_muttex, *arr_empty, *arr_full;
 extern Qval *arr_val;
 extern Sdata **buffers;
+extern SFdata **f_buffers;
 
 /*function Prototype*/
 void consumer(int count);

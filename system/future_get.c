@@ -29,12 +29,15 @@ syscall future_get(future* f, char* value){
 				// get the value if the future is full.
 				*value = *f->value;
 				f->state = FUTURE_EMPTY;
+				//fprintf(stderr,"%s: %d \r\n", __FUNCTION__, __LINE__);
 			}else{
 				// Future is not set with a new value, suspend the process
 				f->pid = getpid();
 				f->state = FUTURE_WAITING;
 				pid = f->pid;
+				//fprintf(stderr,"2 %s: %d \r\n", __FUNCTION__, __LINE__);
 				suspend(pid);
+				//fprintf(stderr,"3 %s: %d \r\n", __FUNCTION__, __LINE__);
 				*value = *f->value;
 			}
 			restore(mask);
