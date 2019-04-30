@@ -24,6 +24,7 @@ const	struct	cmdent	cmdtab[] = {
 	{"prodcons",	FALSE,	xsh_prodcons},
 	{"ps",		FALSE,	xsh_ps},
 	{"run",		FALSE,	xsh_run},
+	{"fstest",	FALSE,  xsh_fstest},
 	{"sleep",	FALSE,	xsh_sleep},
 	{"sp_future", 	FALSE,  sp_future},
 	{"stream_proc",	FALSE,	stream_proc},

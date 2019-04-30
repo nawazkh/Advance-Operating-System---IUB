@@ -235,19 +235,85 @@ int fs_open(char *filename, int flags) {
         }
 	root_dir = &(fsd.root_dir);
 	for(j = 0; j < root_dir->numentries;i++){
-		
+		entry = &(root_dir->entry[j]);
+		if(!strcmp(entry->name, filename)){
+			i = (struct inode*)getmem(sizeof(struct inode));
+			if(fs_get_inode_by_num(0,entry->inode_num, i) == SYSERR){
+				fprintf(stderr,"could not get inode for %s\n",filename );
+				return SYSERR;
+			}
+			file_desc = &(oft[next_open_fd]);
+			next_open_fd++;
+			file_desc->in = *i;
+			file_desc->de = entry;
+			file_desc->fileptr = 0;
+			file_desc->state = flags;
+			break;
+		}	
 	}
-
-
-	return SYSERR;
+	if(entry == NULL){
+		fprintf(stderr,"file not found\n");
+		return SYSERR;
+	}
+	return (next_open_fd - 1);
 }
 
 int fs_close(int fd) {
-  return SYSERR;
+	struct filetable *file_desc;
+	struct inode *i;
+	if(fd < 0 || fd >= next_open_fd){
+                fprintf(stderr, "Bad file descriptor \n");
+                return SYSERR;
+        }
+	file_desc = &(oft[fd]);
+	i = &(file_desc->in);
+	fs_put_inode_by_num(0, i->id, i);
+	file_desc->fileptr = 0;
+	freemem(&(file_desc->in), sizeof(struct inode));
+	file_desc->state = FSTATE_CLOSED;
+	return OK;
+		
 }
 
 int fs_create(char *filename, int mode) {
-  return SYSERR;
+	struct filetable *file_desc;
+	struct dirent *entry;
+        struct inode *i;
+	struct directory *root = &(fsd.root_dir);
+	int j, fd, nIn;
+	fd = fs_open(filename, O_RDWR);
+	if(fd != SYSERR){
+		fprintf(stderr,"file will open in read/write mode \n");
+		return fd;
+	}
+	
+	nIn = fsd.inodes_used;
+	fsd.inodes_used++;
+	i = (struct inode*)getmem(sizeof(struct inode));
+	fs_get_inode_by_num(0, nIn, i);
+	i->id = nIn;
+	i->type = INODE_TYPE_FILE;
+	i->device = 0;
+	i->size = 0;
+	
+	fs_put_inode_by_num(0,nIn,i);
+	entry = &(root->entry[root->numentries]);
+	entry->inode_num = nIn;
+	strcpy(entry->name, filename);
+	(root->numentries)++;
+	
+	if(next_open_fd >= NUM_FD){
+		fprintf(stderr, " max number of files have been opened\n");
+		return SYSERR;
+	}
+	file_desc = &(oft[next_open_fd]);
+	file_desc->fileptr = 0;
+	file_desc->state = mode;
+	file_desc->de = &entry;
+	file_desc->in = *i;
+	next_open_fd++;
+	
+	return (next_open_fd - 1);
 }
 
 int fs_seek(int fd, int offset) {
@@ -312,7 +378,60 @@ int fs_read(int fd, void *buf, int nbytes) {
 }
 
 int fs_write(int fd, void *buf, int nbytes) {
-  return SYSERR;
+	struct filetable *file_desc;
+	struct inode *i;
+	char *current;
+	int j,ndbs, data_block, blck, blck_offset, nWritten = 0, remaining = 0;
+	
+	if(fd < 0 || fd >= next_open_fd){
+                fprintf(stderr, "Bad file descriptor \n");
+                return SYSERR;
+        }
+	
+	file_desc = &oft[fd];
+	if(file_desc->state == O_RDONLY){
+		fprintf(stderr,"cannot open file in read only mode\n");
+		return SYSERR;
+	}
+	
+	current = buf;
+	i = &(file_desc->in);
+	blck = file_desc->fileptr/MDEV_BLOCK_SIZE;
+	blck_offset = file_desc->fileptr%MDEV_BLOCK_SIZE;
+	if(blck_offset > 0){
+		memcpy(block_cache, current,(MDEV_BLOCK_SIZE-blck_offset+1));
+		bs_bwrite(0, i->blocks[blck], 0, (void*)block_cache, (MDEV_BLOCK_SIZE-blck_offset+1));
+		nWritten += (MDEV_BLOCK_SIZE-blck_offset+1);
+		i->size += nWritten;
+		file_desc->fileptr += nWritten;
+		current += nWritten;
+	}
+	while(nWritten < nbytes){
+		blck = file_desc->fileptr/MDEV_BLOCK_SIZE;
+		data_block = -1;
+		for(j = 15; j <= 512;j++){
+			if(!fs_getmaskbit(j)){
+				data_block = j;
+				break;
+			}
+		}
+		//data_block = get_next_free_db();
+		fs_setmaskbit(data_block);
+		i->blocks[blck] = data_block;
+		if((nbytes - nWritten) > MDEV_BLOCK_SIZE){
+			remaining = MDEV_BLOCK_SIZE;
+		}else{
+			remaining =(nbytes - nWritten);
+		}
+	
+		memcpy(block_cache, current, remaining);
+		bs_bwrite(0,i->blocks[blck], 0, (void*)block_cache, remaining);
+		file_desc->fileptr += remaining;
+		nWritten += remaining;
+		i->size += remaining;
+		current += remaining;
+	}
+	return nWritten;
 }
 
 #endif /* FS */

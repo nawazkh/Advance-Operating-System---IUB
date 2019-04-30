@@ -1,6 +1,7 @@
 /* xinu.h - include all system header files */
 #ifndef _XINU_H
 #define _XINU_H
+#define FS TRUE
 #include <stdarg.h>
 #include <kernel.h>
 #include <stddef.h>

@@ -1,4 +1,7 @@
 /*in the file stream_proc.c*/
+extern shellcmd xsh_fstest	(int nargs, char *args[]);
+
+/*in the file stream_proc.c*/
 extern shellcmd sp_future     (int32, char *[]);
 
 /* in file xsh_future_test.c */
