@@ -234,11 +234,11 @@ int fs_open(char *filename, int flags) {
                 return SYSERR;
         }
 	root_dir = &(fsd.root_dir);
-	for(j = 0; j < root_dir->numentries;i++){
+	for(j = 0; j < root_dir->numentries; j++){
 		entry = &(root_dir->entry[j]);
 		if(!strcmp(entry->name, filename)){
 			i = (struct inode*)getmem(sizeof(struct inode));
-			if(fs_get_inode_by_num(0,entry->inode_num, i) == SYSERR){
+			if(fs_get_inode_by_num(0,entry->inode_num,i) == SYSERR){
 				fprintf(stderr,"could not get inode for %s\n",filename );
 				return SYSERR;
 			}
@@ -281,6 +281,7 @@ int fs_create(char *filename, int mode) {
         struct inode *i;
 	struct directory *root = &(fsd.root_dir);
 	int j, fd, nIn;
+	// check if file already present
 	fd = fs_open(filename, O_RDWR);
 	if(fd != SYSERR){
 		fprintf(stderr,"file will open in read/write mode \n");
@@ -371,9 +372,8 @@ int fs_read(int fd, void *buf, int nbytes) {
 
 		bts_read += remaining;
 		file_desc->fileptr += remaining;
-		fprintf(stderr, "output read :  %d, with file pointer as%d \n",bts_read,file_desc->fileptr);
+		fprintf(stderr, "output read :  %d, with file pointer as %d \n",bts_read,file_desc->fileptr);
 	}
-	
 	return bts_read;
 }
 
@@ -421,7 +421,7 @@ int fs_write(int fd, void *buf, int nbytes) {
 		if((nbytes - nWritten) > MDEV_BLOCK_SIZE){
 			remaining = MDEV_BLOCK_SIZE;
 		}else{
-			remaining =(nbytes - nWritten);
+			remaining = (nbytes - nWritten);
 		}
 	
 		memcpy(block_cache, current, remaining);
