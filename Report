@@ -1,0 +1,105 @@
+------- Assignment 2 ---------
+Q1) Does your program output any garbage? If yes, why?
+A1) My program outputs garbage values on higher values of "count", like 30. 
+This is because both producer and consumer are not synchronised and both are trying 
+to print to the output stream at the same time.
+And as a result we get garbage values in the output stream.
+
+Also it is not sure which process enters CPU first leading to the garbage values on the output stream.
+
+Q2) Are all the produced values getting consumed? Check your program for a small count like 20.
+A2) From the output of my program, not all the values of produced are getting consumed. 
+This may be because the consume is not able to print the multiple generated produced values.
+
+----- Files ------------
+----------------------
+shell/xsh_prodcons.c
+---------------------
+#include <xinu.h>
+#include <prodcons.h>
+#include <stdlib.h>
+
+int n;                 //Definition for global variable 'n'
+/*Now global variable n will be on Heap so it is accessible all the processes i.e. consume and produce*/
+
+int checkNum(const char *str) 
+{
+    while(*str != '\0')
+    {
+        if(*str < '0' || *str > '9')
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
+shellcmd xsh_prodcons(int nargs, char *args[])
+{
+  //Argument verifications and validations
+	int count = 2000;             //local varible to hold count
+	if (nargs == 2 && strncmp(args[1], "--help", 7) == 0) {
+		printf("Use: %s\n\n", args[0]);
+		printf("Description:\n");
+		printf("\prodcons, assignment 2; usage:\n prodcons number");
+		printf("Options:\n");
+		printf("\t--help\t display this help and exit\n");
+		return 0;
+	}
+	if (nargs > 2) {
+		fprintf(stderr, "%s: too many arguments\n", args[0]);
+		fprintf(stderr, "Try '%s --help' for more information\n",
+				args[0]);
+		return 1;
+	}
+
+	if (nargs != 2) {
+		fprintf(stderr, "%s: argument in error\n", args[0]);
+		fprintf(stderr, "Try '%s --help' for more information\n",
+				args[0]);
+		return 1;
+	}
+	if(!checkNum(args[1])){
+		printf("Invalid number. Please enter integer after prodcons");
+		return (0);
+	}
+	count = atoi(args[1]);
+	//check args[1] if present assign value to count
+    
+	//create the process producer and consumer and put them in ready queue.
+    	//Look at the definations of function create and resume in the system folder for reference.      
+    	resume( create(producer, 1024, 20, "producer", 1, count));
+    	resume( create(consumer, 1024, 20, "consumer", 1, count));
+    	return (0);
+}
+
+-------------------------
+apps/produce.c
+-------------------------
+#include <xinu.h>
+#include <prodcons.h>
+
+void producer(int count) {
+	int32 i; //counter 
+	
+	for(i = 0; i <= count; i++){
+		n = i;
+		printf("produced : %d \n",i);
+	}
+}
+
+
+-------------------------
+apps/consume.c
+------------------------
+#include <xinu.h>
+#include <prodcons.h>
+
+void consumer(int count) {
+	int32 i; // counter
+
+	for(i = 0; i <= count; i++){
+		printf("consumed : %d \n",n);
+	}
+}
+
+------------------------------------------------------
